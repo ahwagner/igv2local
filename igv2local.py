@@ -10,11 +10,6 @@ Import XML document defining an IGV session and recreate all needed files
 locally.
 """
 
-# Track = namedtuple('Track', ['Session', 'Resources', 'Panels', 'PanelLayout',
-#                              'HiddenAttributes'])
-#
-# Panel
-
 
 class Session:
 
