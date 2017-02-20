@@ -1,0 +1,20 @@
+<!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->
+<Session genome="b37" hasGeneTrack="true" hasSequenceTrack="true" locus="All" version="8">
+    <Resources>
+		<Resource path="https://gscweb.gsc.wustl.edu/gscuser/awagner/test.bam"/>
+	</Resources>
+    <Panel height="195" name="Panel59" width="1244">
+            <Track altColor="0,0,178" autoScale="true" color="175,175,175" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10"  id="https://gscweb.gsc.wustl.edu/gscuser/awagner/test.bam_coverage" name="SCLC1_relapse_1206887_coverage" showReference="false" snpThreshold="0.2" sortable="true" visible="true">
+                 <DataRange baseline="0.0" drawBaseline="false" flipAxis="false" maximum="160.0" minimum="0.0" type="LINEAR"/>
+             </Track>
+             <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="EXPANDED" featureVisibilityWindow="-1" fontSize="10"  id="https://gscweb.gsc.wustl.edu/gscuser/awagner/test.bam" name="SCLC1_relapse_1206887     test.bam     normal exome"  showSpliceJunctions="false" sortable="true" visible="true">
+                <RenderOptions colorByTag="" colorOption="READ_STRAND" flagUnmappedPairs="false" groupByTag="" maxInsertSize="1000" minInsertSize="50" shadeBasesOption="QUALITY" shadeCenters="true" showAllBases="false" sortByTag=""/>
+            </Track>
+	</Panel>
+	<PanelLayout dividerFractions="0.006550218340611353,0.22489082969432314,0.4497816593886463,0.6746724890829694,0.8995633187772926"/>
+    <HiddenAttributes>
+        <Attribute name="NAME"/>
+        <Attribute name="DATA FILE"/>
+        <Attribute name="DATA TYPE"/>
+    </HiddenAttributes>
+</Session>
