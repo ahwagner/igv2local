@@ -3,6 +3,7 @@ from gmstk.linusbox import LinusBox
 import xml.etree.ElementTree as ET
 import re
 from pathlib import Path
+import sys
 
 """igv2local
 
@@ -17,43 +18,66 @@ class Session:
     linus.connect()
 
     def __init__(self, igv_xml_file, output_directory):
-        self.igv_xml_file = igv_xml_file
+        self.igv_xml_file = Path(igv_xml_file)
         self.output_directory = Path(output_directory)
         self.xml_tree = None
+        self.report_status = False
 
     def parse_xml(self):
+        if self.report_status:
+            print('Parsing session .xml...')
         self.xml_tree = ET.parse(self.igv_xml_file)
 
     def write_xml(self):
-        self.xml_tree.write()
+        self.xml_tree.write(self.output_directory / self.igv_xml_file.name)
+
+    @staticmethod
+    def _url_to_path(url):
+        return Path(re.sub(r'https://gscweb.gsc.wustl.edu', '', url))
 
     def copy_files_to_local(self):
+        path_dict = dict()
         if self.xml_tree is None:
             self.parse_xml()
         root = self.xml_tree.getroot()
         for resource in root.find('Resources'):
             web_path = resource.get('path')
-            path = Path(re.sub(r'https://gscweb.gsc.wustl.edu', '', web_path))
-            # resource.set('path', path)
+            path = self._url_to_path(web_path)
             local_path = self.output_directory / path.name
+            path_dict[web_path] = str(local_path)
             self.linus.ftp_get(str(path), str(local_path))
             if local_path.suffix == '.bam':
-                self.linus.ftp_get(str(path), str(local_path) + '.bai')
+                self.linus.ftp_get(str(path) + '.bai', str(local_path) + '.bai')
             resource.set('path', str(local_path))
+        for panel in root.findall('Panel'):
+            for track in panel.findall('Track'):
+                track_id = track.get('id')
+                if track_id.endswith('_coverage'):
+                    path = path_dict[track_id[:-9]] + '_coverage'
+                else:
+                    path = path_dict[track_id]
+                track.set('id', path)
 
-    def create_local(self):
-        pass
+    def create_local(self, report_status=None):
+        if report_status is not None:
+            self.report_status = report_status
+        self.parse_xml()
+        self.copy_files_to_local()
+        self.write_xml()
 
 
-def process_arguments(args=None):
+def main(args=None):
     parser = argparse.ArgumentParser(description='Import XML document defining an IGV session and recreate all needed files locally.')
     parser.add_argument('xml_file', metavar='xml', type=str, help='Remote IGV session file')
     parser.add_argument('--out', default='.', type=str, help='output directory (default cwd)')
     if args is None:
-        return parser.parse_args()
+        parsed = parser.parse_args()
     else:
-        return parser.parse_args(args)
+        parsed = parser.parse_args(args)
+    s = Session(parsed.xml_file, parsed.out)
+    s.create_local(report_status=True)
+    sys.exit(0)
+
 
 if __name__ == '__main__':
-    args = process_arguments()
-    s = Session(args.xml_file, args.out)
+    main()
