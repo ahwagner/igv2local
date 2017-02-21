@@ -1,11 +1,12 @@
 from unittest import TestCase
-from igv2local import main, Session
+from igv2local.igv2local import main, Session
 from definitions import ROOT_DIR
 import os
 import shutil
 
 
 class TestMain(TestCase):
+
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree('test_dir')
@@ -16,7 +17,7 @@ class TestMain(TestCase):
             main(args)
         self.assertEqual(cm.exception.code, 0)
 
-    def test_str_args(self):
+    def test_main(self):
         xml = '/'.join([ROOT_DIR, 'Tests', 'test.xml'])
         args = ['--out', 'test_dir', xml]
         self.assertFalse(os.path.exists('test_dir'))
@@ -96,3 +97,10 @@ class TestSession(TestCase):
         new_session = Session(xml, 'test_output')
         new_session.parse_xml()
         self.assertFalse(trees_equal(self.s.xml_tree, new_session.xml_tree))
+
+    def test_auto_generate_output_dir(self):
+        xml = '/'.join([ROOT_DIR, 'Tests', 'test.xml'])
+        new_session = Session(xml)
+        self.assertIsNone(new_session.output_directory)
+        new_session.parse_xml()
+        self.assertRegex(new_session.output_directory, r'\A[0-9A-Fa-f]{6}\Z')

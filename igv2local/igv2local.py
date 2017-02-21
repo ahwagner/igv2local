@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import re
 from pathlib import Path
 import sys
+import hashlib
 
 """igv2local
 
@@ -17,9 +18,12 @@ class Session:
     linus = LinusBox()
     linus.connect()
 
-    def __init__(self, igv_xml_file, output_directory):
+    def __init__(self, igv_xml_file, output_directory=None):
         self.igv_xml_file = Path(igv_xml_file)
-        self.output_directory = Path(output_directory)
+        if output_directory is not None:
+            self.output_directory = Path(output_directory)
+        else:
+            self.output_directory = None
         self.xml_tree = None
         self.report_status = False
 
@@ -27,8 +31,15 @@ class Session:
         if self.report_status:
             print('Parsing session .xml...')
         self.xml_tree = ET.parse(self.igv_xml_file)
+        if self.output_directory is None:
+            m = hashlib.sha256()
+            m.update(ET.tostring(self.xml_tree.getroot()))
+            self.output_directory = m.hexdigest()[:6]
+            print('Setting output directory to "{}"'.format(self.output_directory))
 
     def write_xml(self):
+        if self.report_status:
+            print('Writing session to local .xml...')
         self.xml_tree.write(self.output_directory / self.igv_xml_file.name)
 
     @staticmethod
@@ -45,8 +56,12 @@ class Session:
             path = self._url_to_path(web_path)
             local_path = self.output_directory / path.name
             path_dict[web_path] = str(local_path)
+            if self.report_status:
+                print("copying remote to {}...".format(local_path))
             self.linus.ftp_get(str(path), str(local_path))
             if local_path.suffix == '.bam':
+                if self.report_status:
+                    print("copying remote to {}...".format(local_path) + '.bai')
                 self.linus.ftp_get(str(path) + '.bai', str(local_path) + '.bai')
             resource.set('path', str(local_path))
         for panel in root.findall('Panel'):
@@ -69,7 +84,7 @@ class Session:
 def main(args=None):
     parser = argparse.ArgumentParser(description='Import XML document defining an IGV session and recreate all needed files locally.')
     parser.add_argument('xml_file', metavar='xml', type=str, help='Remote IGV session file')
-    parser.add_argument('--out', default='.', type=str, help='output directory (default cwd)')
+    parser.add_argument('--out', type=str, help='output directory (default cwd)')
     if args is None:
         parsed = parser.parse_args()
     else:
