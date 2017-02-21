@@ -13,6 +13,6 @@ cd ..
 Next, install igv2local:
 ```bash
 git clone https://github.com/ahwagner/igv2local.git
-cd igv2local.git
+cd igv2local/
 pip install .
 ```
