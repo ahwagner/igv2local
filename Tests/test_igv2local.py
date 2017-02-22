@@ -29,6 +29,7 @@ class TestMain(TestCase):
         self.assertTrue(os.path.isfile('test_dir/test.bam'))
         self.assertTrue(os.path.isfile('test_dir/test.bam.bai'))
 
+
 def trees_equal(t1, t2):
     return elements_equal(t1.getroot(), t2.getroot())
 
@@ -57,6 +58,7 @@ class TestSession(TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree('test_output')
+        os.unlink('web_test.xml')
 
     def setUp(self):
         xml = '/'.join([ROOT_DIR, 'Tests', 'test.xml'])
@@ -98,9 +100,13 @@ class TestSession(TestCase):
         new_session.parse_xml()
         self.assertFalse(trees_equal(self.s.xml_tree, new_session.xml_tree))
 
+    def test_parse_web_xml(self):
+        web_xml = "https://gscweb.gsc.wustl.edu/gscmnt/gc2547/griffithlab/awagner/web_test.xml"
+        new_session = Session(web_xml)
+        self.assertEqual(str(new_session.igv_xml_file), 'web_test.xml')
+        self.assertTrue(os.path.isfile('web_test.xml'))
+
     def test_auto_generate_output_dir(self):
-        xml = '/'.join([ROOT_DIR, 'Tests', 'test.xml'])
+        xml = '/'.join([ROOT_DIR, 'Tests', 'foobar.xml'])
         new_session = Session(xml)
-        self.assertIsNone(new_session.output_directory)
-        new_session.parse_xml()
-        self.assertRegex(new_session.output_directory, r'\A[0-9A-Fa-f]{6}\Z')
+        self.assertEqual(new_session.output_directory, 'foobar')

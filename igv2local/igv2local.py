@@ -4,7 +4,6 @@ import xml.etree.ElementTree as ET
 import re
 from pathlib import Path
 import sys
-import hashlib
 
 """igv2local
 
@@ -19,11 +18,17 @@ class Session:
     linus.connect()
 
     def __init__(self, igv_xml_file, output_directory=None):
-        self.igv_xml_file = Path(igv_xml_file)
+        if re.match(r'^https?://', igv_xml_file):
+            remote_path = self._url_to_path(igv_xml_file)
+            print('Downloading remote .xml file...')
+            self.linus.ftp_get(str(remote_path), remote_path.name)
+            self.igv_xml_file = Path(remote_path.name)
+        else:
+            self.igv_xml_file = Path(igv_xml_file)
         if output_directory is not None:
             self.output_directory = Path(output_directory)
         else:
-            self.output_directory = None
+            self.output_directory = self.igv_xml_file.stem
         self.xml_tree = None
         self.report_status = False
 
@@ -31,11 +36,6 @@ class Session:
         if self.report_status:
             print('Parsing session .xml...')
         self.xml_tree = ET.parse(self.igv_xml_file)
-        if self.output_directory is None:
-            m = hashlib.sha256()
-            m.update(ET.tostring(self.xml_tree.getroot()))
-            self.output_directory = m.hexdigest()[:6]
-            print('Setting output directory to "{}"'.format(self.output_directory))
 
     def write_xml(self):
         if self.report_status:
