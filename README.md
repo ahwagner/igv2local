@@ -26,7 +26,7 @@ Save to configuration file? (y/N): y
 Authentication failed. Please specify password for jsmith on linus199.
 Password: 
 ```
-## Test case
+## Example
 ```bash
 igv2local https://gscweb.gsc.wustl.edu/gscmnt/gc2547/griffithlab/awagner/web_test.xml
 ```
