@@ -26,5 +26,7 @@ Save to configuration file? (y/N): y
 Authentication failed. Please specify password for jsmith on linus199.
 Password: 
 ```
-## Usage
-See `igv2local -h` for instruction on using the program.
+## Test case
+```bash
+igv2local https://gscweb.gsc.wustl.edu/gscmnt/gc2547/griffithlab/awagner/web_test.xml
+```
