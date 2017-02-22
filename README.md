@@ -5,7 +5,7 @@ a command-line interface for moving IGV sessions from remote host to local
 `pip install git+https://github.com/ahwagner/igv2local --process-dependency-links`
 
 ## Configuration
-`igv2local` only requires the remote host configuration specified by the `gmstk` dependency. If this was not previously set up, `igv2local` will prompt you for the host details. The username and host may be saved to the gmstk `config.py` file by responding 'y' to the save prompt.
+`igv2local` only requires the remote host configuration specified by the `gmstk` dependency. If this was not previously set up, `igv2local` will prompt you for the host details. The username and host may be saved to the gmstk `config.py` file for future use by responding 'y' to the save prompt.
 
 ```bash
 igv2local -h
