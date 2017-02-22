@@ -15,7 +15,7 @@ Please enter the remote username: <your username on the host machine, e.g. jsmit
 Save to configuration file? (y/N): y
 ```
 
-If your machine is not authorized via SSH keys, you will be prompted for a password.
+If your machine is not authorized via SSH keys, you will be prompted for your remote host password each time you use `igv2local`.
 
 ```bash
 igv2local -h
