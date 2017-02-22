@@ -28,7 +28,7 @@ class Session:
         if output_directory is not None:
             self.output_directory = Path(output_directory)
         else:
-            self.output_directory = self.igv_xml_file.stem
+            self.output_directory = Path(self.igv_xml_file.stem)
         self.xml_tree = None
         self.report_status = False
 

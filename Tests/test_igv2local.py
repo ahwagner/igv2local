@@ -57,8 +57,12 @@ class TestSession(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        shutil.rmtree('test_output')
-        os.unlink('web_test.xml')
+        shutil.rmtree('test_output', ignore_errors=True)
+        try:
+            os.unlink('web_test.xml')
+        except FileNotFoundError:
+            pass
+        shutil.rmtree('web_test', ignore_errors=True)
 
     def setUp(self):
         xml = '/'.join([ROOT_DIR, 'Tests', 'test.xml'])
@@ -105,8 +109,12 @@ class TestSession(TestCase):
         new_session = Session(web_xml)
         self.assertEqual(str(new_session.igv_xml_file), 'web_test.xml')
         self.assertTrue(os.path.isfile('web_test.xml'))
+        new_session.create_local()
+        self.assertTrue(os.path.isfile('web_test/test.bam'))
+        self.assertTrue(os.path.isfile('web_test/test.bam.bai'))
+        self.assertTrue(os.path.isfile('web_test/web_test.xml'))
 
     def test_auto_generate_output_dir(self):
         xml = '/'.join([ROOT_DIR, 'Tests', 'foobar.xml'])
         new_session = Session(xml)
-        self.assertEqual(new_session.output_directory, 'foobar')
+        self.assertEqual(str(new_session.output_directory), 'foobar')
