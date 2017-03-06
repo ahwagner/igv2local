@@ -3,6 +3,7 @@ a command-line interface for moving IGV sessions from remote host to local
 
 ## Installation
 `igv2local` requires Python version >= 3.6
+
 `pip install git+https://github.com/ahwagner/igv2local --process-dependency-links`
 
 ## Configuration
