@@ -2,6 +2,8 @@
 a command-line interface for moving IGV sessions from remote host to local
 
 ## Installation
+`igv2local` requires Python version >= 3.6
+
 `pip install git+https://github.com/ahwagner/igv2local --process-dependency-links`
 
 ## Configuration
@@ -15,7 +17,7 @@ Please enter the remote username: <your username on the host machine, e.g. jsmit
 Save to configuration file? (y/N): y
 ```
 
-If your machine is not authorized via SSH keys, you will be prompted for a password.
+If your machine is not authorized via SSH keys, you will be prompted for your remote host password each time you use `igv2local`.
 
 ```bash
 igv2local -h
@@ -26,5 +28,7 @@ Save to configuration file? (y/N): y
 Authentication failed. Please specify password for jsmith on linus199.
 Password: 
 ```
-## Usage
-See `igv2local -h` for instruction on using the program.
+## Example
+```bash
+igv2local https://gscweb.gsc.wustl.edu/gscmnt/gc2547/griffithlab/awagner/web_test.xml
+```
