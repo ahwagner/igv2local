@@ -7,7 +7,7 @@ if sys.version_info < (3, 6):
     sys.exit("This package requires Python v3.6 or higher.")
 
 setup(name='igv2local',
-      version='0.1.0a3',
+      version='0.1.1',
       description='IGV session remote host to local file organizer',
       author='Alex Wagner',
       url='https://github.com/ahwagner/igv2local',
@@ -27,6 +27,6 @@ setup(name='igv2local',
           'console_scripts': ['igv2local=igv2local.igv2local:main']
       },
       dependency_links=[
-          'https://github.com/ahwagner/gmstk/tarball/master#egg=gmstk-0.1.0a1'
+          'https://github.com/ahwagner/gmstk/tarball/master#egg=gmstk-0.2'
           ]
       )
