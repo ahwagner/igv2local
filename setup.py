@@ -7,7 +7,7 @@ if sys.version_info < (3, 6):
     sys.exit("This package requires Python v3.6 or higher.")
 
 setup(name='igv2local',
-      version='0.2.1',
+      version='0.2.2',
       description='IGV session remote host to local file organizer',
       author='Alex Wagner',
       url='https://github.com/ahwagner/igv2local',

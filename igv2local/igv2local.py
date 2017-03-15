@@ -64,10 +64,11 @@ class Session:
             else:
                 self.linus.ftp_get(str(path), str(local_path))
             if local_path.suffix == '.bam':
+                index = local_path.with_suffix('.bam.bai')
                 if self.report_status:
-                    print("copying remote to {}...".format(local_path) + '.bai')
-                if self.ignore_existing and local_path.with_suffix('.bam.bai').is_file():
-                    print("skipping (file {} already exists)".format(str(local_path)))
+                    print("copying remote to {}...".format(index))
+                if self.ignore_existing and index.is_file():
+                    print("skipping (file {} already exists)".format(index))
                 else:
                     self.linus.ftp_get(str(path) + '.bai', str(local_path) + '.bai')
             resource.set('path', str(local_path))
