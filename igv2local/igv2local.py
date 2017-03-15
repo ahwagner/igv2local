@@ -31,6 +31,7 @@ class Session:
             self.output_directory = Path(self.igv_xml_file.stem)
         self.xml_tree = None
         self.report_status = False
+        self.ignore_existing = False
 
     def parse_xml(self):
         if self.report_status:
@@ -58,24 +59,34 @@ class Session:
             path_dict[web_path] = str(local_path)
             if self.report_status:
                 print("copying remote to {}...".format(local_path))
-            self.linus.ftp_get(str(path), str(local_path))
+            if self.ignore_existing and local_path.is_file():
+                print("skipping (file {} already exists)".format(str(local_path)))
+            else:
+                self.linus.ftp_get(str(path), str(local_path))
             if local_path.suffix == '.bam':
                 if self.report_status:
                     print("copying remote to {}...".format(local_path) + '.bai')
-                self.linus.ftp_get(str(path) + '.bai', str(local_path) + '.bai')
+                if self.ignore_existing and local_path.with_suffix('.bam.bai').is_file():
+                    print("skipping (file {} already exists)".format(str(local_path)))
+                else:
+                    self.linus.ftp_get(str(path) + '.bai', str(local_path) + '.bai')
             resource.set('path', str(local_path))
         for panel in root.findall('Panel'):
             for track in panel.findall('Track'):
                 track_id = track.get('id')
                 if track_id.endswith('_coverage'):
                     path = path_dict[track_id[:-9]] + '_coverage'
+                elif not path_dict.get(track_id):
+                    continue
                 else:
                     path = path_dict[track_id]
                 track.set('id', path)
 
-    def create_local(self, report_status=None):
+    def create_local(self, report_status=None, ignore_existing=None):
         if report_status is not None:
             self.report_status = report_status
+        if ignore_existing is not None:
+            self.ignore_existing = ignore_existing
         self.parse_xml()
         self.copy_files_to_local()
         self.write_xml()
@@ -85,12 +96,13 @@ def main(args=None):
     parser = argparse.ArgumentParser(description='Import XML document defining an IGV session and recreate all needed files locally.')
     parser.add_argument('xml_file', metavar='xml', type=str, help='Remote IGV session file')
     parser.add_argument('--out', type=str, help='output directory (default cwd)')
+    parser.add_argument('--ignore-existing', action='store_true', help='do not overwrite or compare local files with remote')
     if args is None:
         parsed = parser.parse_args()
     else:
         parsed = parser.parse_args(args)
     s = Session(parsed.xml_file, parsed.out)
-    s.create_local(report_status=True)
+    s.create_local(report_status=True, ignore_existing=parsed.ignore_existing)
     sys.exit(0)
 
 
